@@ -21,7 +21,7 @@ Feature: PET REST PROJECT
 
       | name      | tags    | status |
       | gatopardo | gato    | 200    |
-#      | tigre     | salvaje | 200    |
+      | tigre     | salvaje | 200    |
 
   @PUT
   Scenario Outline: update a PET
@@ -37,7 +37,7 @@ Feature: PET REST PROJECT
 
       | name      | tags    | status | updateName |
       | gatopardo | gato    | 200    | gatito     |
-#      | tigre     | salvaje | 200    | tigreton   |
+      | tigre     | salvaje | 200    | tigreton   |
 
   @DELETE
   Scenario Outline: Delete a PET
@@ -53,4 +53,4 @@ Feature: PET REST PROJECT
 
       | name      | tags    | status | status2 |
       | gatopardo | gato    | 200    | 404     |
-#      | tigre     | salvaje | 200    | 404     |
+      | tigre     | salvaje | 200    | 404     |
