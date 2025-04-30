@@ -50,7 +50,14 @@ public class IMDBPetStoreSteps {
 		String endpoint = lastMethod + " " + lastEndpoint;
 		ResponseLogger.logCliente("Verificación de código de respuesta", endpoint, status, actualStatus, exito,
 			exito ? null : "El sistema devolvió un código inesperado.");
-//		ResponseLogger.assertAndLogStatus(status, actualStatus);
+		
+		// Si el código es 200, validar el contenido
+		if (actualStatus == 200 && lastMethod.equals("POST")) {
+			assertEquals("Error en la validación del contenido de la respuesta", 
+				String.format("{\"id\":%d,\"name\":\"%s\",\"photoUrls\":[],\"tags\":[{\"id\":0,\"name\":\"%s\"}],\"status\":\"available\"}", 
+					petId, petName, petTags), 
+				getCurrentResponse().asString());
+		}
 	}
 
 	// --- POST Steps ---
@@ -96,8 +103,12 @@ public class IMDBPetStoreSteps {
 		String endpoint = "GET " + PET_ENDPOINT + petId;
 		ResponseLogger.logCliente("Búsqueda de mascota tras creación", endpoint, 200, getResponse.getStatusCode(), exito,
 			exito ? null : "El sistema indicó que la mascota no existe.");
-//		ResponseLogger.assertAndLogStatus(200, getResponse.getStatusCode());
-		assertEquals(petName, getResponse.jsonPath().getString("name"));
+		
+		// Validar el contenido completo de la respuesta
+		assertEquals("Error en la validación del contenido de la respuesta", 
+			String.format("{\"id\":%d,\"name\":\"%s\",\"photoUrls\":[],\"tags\":[{\"id\":0,\"name\":\"%s\"}],\"status\":\"available\"}", 
+				petId, petName, petTags), 
+			getResponse.asString());
 	}
 
 	// --- PUT Steps ---
@@ -123,6 +134,12 @@ public class IMDBPetStoreSteps {
 				.put(lastEndpoint);
 
 		setCurrentResponse(response);
+		
+		// Validar el contenido de la respuesta de actualización
+		assertEquals("Error en la validación del contenido de la respuesta de actualización", 
+			String.format("{\"id\":%d,\"name\":\"%s\",\"photoUrls\":[],\"tags\":[],\"status\":\"available\"}", 
+				petId, petName), 
+			response.asString());
 	}
 
 	@When("^I send  a PUT Request$")
@@ -143,6 +160,11 @@ public class IMDBPetStoreSteps {
 	public void when_i_send_get_request_again() {
 		Response response = given().get(PET_ENDPOINT + petId);
 		setCurrentResponse(response);
+		
+		// Validar que la mascota ya no existe
+		assertEquals("Error: La mascota debería haber sido eliminada", 
+			"{\"code\":404,\"type\":\"unknown\",\"message\":\"Pet not found\"}", 
+			response.asString());
 	}
 
 	// --- Utility Methods ---
